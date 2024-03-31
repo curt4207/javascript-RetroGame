@@ -5,18 +5,49 @@ class Player {
         this.height = 100;
         this.x = this.game.width * 0.5 - this.width * 0.5;
         this.y = this.game.height - this.height;
-        this.speed = 0;
+        this.speed = 10;
     }
     draw(context) {
         context.fillRect(this.x, this.y, this.width, this.height);
     }
     update(){
-        this.x += this.speed;
+        // Horizontal movement
+        if( this.game.keys.indexOf("ArrowLeft") > -1) this.x -= this.speed; 
+        if( this.game.keys.indexOf("ArrowRight") > -1) this.x += this.speed; 
+
+        // Horizontal movement Boundaries
+        if(this.x < 0) this.x = 0;
+        else if( this.x > this.game.width - this.width) this.x =this.game.width - this.width;
+        
     }
 }
 
 class Projectile {
+ constructor(canvas){
+    this.width = 4;
+    this.height = 20;
+    this.x = 0;
+    this.y = 0;
+    this.speed = 20;
+    this.free = true;
+ }
+  draw(context) {
+    if(!this.free) {
+        context.fillRect(this.x, this.y, this.width, this.height)
+    }
+  }
+  update(){ 
+    if(!this.free) {
+        this.y -= this.speed;
+    }
+  }
+  start(){
 
+  }
+
+  reset(){
+    
+  }
 }
 
 class Enemy {
@@ -28,12 +59,20 @@ class Game {
         this.canvas = canvas;
         this.width = this.canvas.width;
         this.height =this.canvas.height;
+
+        this.keys = [];
         this.player = new Player(this);
 
         // Event listeners
-        window.addEventListener("keydown", function(e){
-            console.log(e)
-        })
+        window.addEventListener("keydown", e => {
+        if(this.keys.indexOf(e.key) === -1) this.keys.push(e.key)
+           
+    })
+        window.addEventListener("keyup", e => {
+        const index = this.keys.indexOf(e.key)
+        if(index > -1)this.keys.splice(index, 1);
+        
+    })
     }
     // Render will run 60 times per sec drawing a updating everything
     render(context){
